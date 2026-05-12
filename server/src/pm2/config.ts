@@ -38,7 +38,7 @@ export async function readConfig(processName: string): Promise<Record<string, st
   pm2.disconnect();
   const cwd = desc[0]?.pm2_env?.pm_cwd;
   if (!cwd) throw new Error('process cwd not found');
-  const envPath = path.join(cwd, '.env');
+  const envPath = path.join(cwd, '.env.config');
   if (!fs.existsSync(envPath)) return {};
   return parseEnv(fs.readFileSync(envPath, 'utf8'));
 }
@@ -51,7 +51,7 @@ export async function writeConfig(processName: string, updates: Record<string, s
   const desc = await pm2Describe(processName);
   const cwd = desc[0]?.pm2_env?.pm_cwd;
   if (!cwd) { pm2.disconnect(); throw new Error('process cwd not found'); }
-  const envPath = path.join(cwd, '.env');
+  const envPath = path.join(cwd, '.env.config');
   const existing = fs.existsSync(envPath) ? parseEnv(fs.readFileSync(envPath, 'utf8')) : {};
   const merged = { ...existing, ...updates };
   fs.writeFileSync(envPath, serializeEnv(merged), 'utf8');
