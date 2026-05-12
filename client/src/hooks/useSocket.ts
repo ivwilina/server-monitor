@@ -5,7 +5,7 @@ export function useSocket(token: string): Socket | null {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const s = io({ auth: { token } });
+    const s = io(window.location.origin, { auth: { token } });
     setSocket(s);
     return () => { s.disconnect(); };
   }, [token]);

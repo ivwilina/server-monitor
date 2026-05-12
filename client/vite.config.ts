@@ -6,9 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/auth': 'http://localhost:3001',
-      '/pm2': 'http://localhost:3001',
-      '/socket.io': { target: 'http://localhost:3001', ws: true },
+      '/auth': 'http://localhost:3069',
+      '/pm2': 'http://localhost:3069',
+      '/socket.io': { target: 'http://localhost:3069', ws: true },
     },
   },
 });

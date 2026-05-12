@@ -10,12 +10,20 @@ export default function TrafficViewer({ socket, processName }: Props) {
   useEffect(() => {
     if (!socket) return;
     setEntries([]);
-    socket.emit('subscribe', `traffic:${processName}`);
     const handler = (entry: TrafficEntry) => setEntries(prev => [...prev.slice(-199), entry]);
     socket.on('traffic', handler);
+
+    const doSubscribe = () => socket.emit('subscribe', `traffic:${processName}`);
+    if (socket.connected) {
+      doSubscribe();
+    } else {
+      socket.once('connect', doSubscribe);
+    }
+
     return () => {
       socket.emit('unsubscribe', `traffic:${processName}`);
       socket.off('traffic', handler);
+      socket.off('connect', doSubscribe);
     };
   }, [socket, processName]);
 

@@ -11,12 +11,20 @@ export default function LogViewer({ socket, processName }: Props) {
   useEffect(() => {
     if (!socket) return;
     setLines([]);
-    socket.emit('subscribe', `logs:${processName}`);
     const handler = (entry: LogEntry) => setLines(prev => [...prev.slice(-499), entry]);
     socket.on('log', handler);
+
+    const doSubscribe = () => socket.emit('subscribe', `logs:${processName}`);
+    if (socket.connected) {
+      doSubscribe();
+    } else {
+      socket.once('connect', doSubscribe);
+    }
+
     return () => {
       socket.emit('unsubscribe', `logs:${processName}`);
       socket.off('log', handler);
+      socket.off('connect', doSubscribe);
     };
   }, [socket, processName]);
 
